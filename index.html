@@ -56,13 +56,13 @@
 </head>
 <body>
   <div id="installPrompt" class="install-prompt">
-    <span>📱 Install this app for offline use</span>
+    <span>Install this app for offline use</span>
     <button onclick="installApp()">Install</button>
     <button class="close" onclick="closeInstallPrompt()">✕</button>
   </div>
 
   <div class="wrap">
-    <h1>Field Material Form — Complete (Offline) 📦</h1>
+    <h1>Field Material Form — Complete (Offline)</h1>
 
     <div class="grid">
       <div>
@@ -107,7 +107,7 @@
       <div class="full">
         <label>Type of Scheme (choose multiple)</label>
         <div class="scheme-box" id="schemeBox">
-          <label><input type="checkbox" value="Guide wall"> Guide wall 🧱</label>
+          <label><input type="checkbox" value="Guide wall"> Guide wall</label>
           <label><input type="checkbox" value="Bamboo crib"> Bamboo crib</label>
           <label><input type="checkbox" value="Path way"> Path way</label>
           <label><input type="checkbox" value="Mashonary wall"> Mashonary wall</label>
@@ -148,10 +148,10 @@
     </div>
 
     <div class="actions">
-      <button onclick="saveEntry()">💾 Save Entry</button>
-      <button onclick="viewSavedEntries()">📋 View Saved Entries</button>
-      <button onclick="exportToExcel()" style="background:var(--green)">📤 Export to Excel</button>
-      <button onclick="deleteAllEntries()" class="danger">🗑 Delete All</button>
+      <button onclick="saveEntry()">Save Entry</button>
+      <button onclick="viewSavedEntries()">View Saved Entries</button>
+      <button onclick="exportToExcel()" style="background:var(--green)">Export to Excel</button>
+      <button onclick="deleteAllEntries()" class="danger">Delete All</button>
       <button onclick="clearForm()" class="ghost">Clear form</button>
     </div>
 
@@ -160,7 +160,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
-    // PWA Install functionality
     let deferredPrompt;
     
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -186,7 +185,6 @@
       document.getElementById('installPrompt').style.display = 'none';
     }
 
-    // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').then(reg => {
@@ -197,7 +195,6 @@
       });
     }
 
-    // TM -> Block mapping
     const tmBlocks = {
       "Ayaz": ["A1","A2","A3","A4","A5","A6"],
       "Eliyes": ["B1","B2","B3","B4","B5","B6"],
@@ -404,7 +401,7 @@
 
       localStorage.setItem('lastForm', JSON.stringify({ checker, tm, block }));
 
-      showMessage('✅ Entry saved locally. Total entries: ' + arr.length);
+      showMessage('Entry saved locally. Total entries: ' + arr.length);
       clearForm();
       viewSavedEntries();
     }
@@ -432,4 +429,72 @@
             <td>${escapeHtml(mat.comment||'')}</td>
             <td>${escapeHtml(ent.date)}</td>
           </tr>`;
-   
+        });
+      });
+      html += '</tbody></table>';
+      out.innerHTML = html;
+    }
+
+    function exportToExcel(){
+      const arr = JSON.parse(localStorage.getItem('materialEntries') || '[]');
+      if (!arr.length){ alert('No entries to export'); return; }
+      const rows = [];
+      rows.push(["Checker","TM","Block","Sub","MRF","DRR","Scheme","Material","Received","Used","Remaining","Comment","Date"]);
+      arr.forEach(ent=>{
+        ent.materials.forEach(mat=>{
+          rows.push([ent.checker, ent.tm, ent.block, ent.sub, ent.mrf||'', ent.drr||'', (ent.schemes||[]).join(', '), mat.name, mat.received||'', mat.used||'', mat.remaining||'', mat.comment||'', ent.date]);
+        });
+      });
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Entries');
+      XLSX.writeFile(wb, 'Field_Material_Entries.xlsx');
+    }
+
+    function deleteAllEntries(){
+      if (!confirm('Delete ALL saved entries? This cannot be undone.')) return;
+      localStorage.removeItem('materialEntries');
+      showMessage('All entries deleted.');
+      viewSavedEntries();
+    }
+
+    function clearForm(){
+      const last = JSON.parse(localStorage.getItem('lastForm') || '{}');
+      document.getElementById('checker').value = last.checker || '';
+      document.getElementById('tm').value = last.tm || '';
+      updateBlocks();
+      document.getElementById('block').value = last.block || '';
+      updateSubs();
+      document.getElementById('sub').value = '';
+      document.getElementById('mrf').value = '';
+      document.getElementById('drr').value = '';
+      document.getElementById('otherScheme').value = '';
+      document.querySelectorAll('#schemeBox input[type=checkbox]').forEach(c=>c.checked=false);
+      document.getElementById('materialsSelect').selectedIndex = -1;
+      document.getElementById('customMaterial').value = '';
+      document.getElementById('formsContainer').innerHTML = '';
+    }
+
+    function showMessage(msg){
+      const out = document.getElementById('output');
+      out.innerHTML = `<div class="small">${escapeHtml(msg)}</div>`;
+    }
+
+    (function init(){
+      const last = JSON.parse(localStorage.getItem('lastForm') || '{}');
+      if (last.checker) document.getElementById('checker').value = last.checker;
+      if (last.tm) { 
+        document.getElementById('tm').value = last.tm; 
+        updateBlocks(); 
+      }
+      if (last.block) { 
+        document.getElementById('block').value = last.block;
+        updateSubs();
+      }
+      viewSavedEntries();
+      document.getElementById('checker').addEventListener('input', ()=>saveLast('checker'));
+      document.getElementById('tm').addEventListener('change', ()=>saveLast('tm'));
+    })();
+  </script>
+</body>
+</html>
