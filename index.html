@@ -195,54 +195,18 @@
       });
     }
 
-    const tmBlocks = {
-      "Ayaz": ["A1","A2","A3","A4","A5","A6"],
-      "Eliyes": ["B1","B2","B3","B4","B5","B6"],
-      "Sona Mia": ["C1","C2","C3","C4","C5"],
-      "Arfat": ["D1","D2","D3","D4","D5"],
-      "Ayub Khan": ["E1","E2","E3","E4","E5"],
-      "Omer Farooq": ["F1","F2","F3","F4","F5"],
-      "Nur Alom": ["G1","G2","G3","G4","G5"]
-    };
-
+    // All TMs use the same block options (A to G)
+    const allBlocks = ["A","B","C","D","E","F","G"];
+    
+    // Each block has its own sub options
     const blockSubs = {
-      "A1": ["SA1","SA2","SA3","SA4","SA5","SA6"],
-      "A2": ["SA7","SA8","SA9","SA10","SA11","SA12"],
-      "A3": ["SA13","SA14","SA15","SA16","SA17","SA18"],
-      "A4": ["SA19","SA20","SA21","SA22","SA23","SA24"],
-      "A5": ["SA25","SA26","SA27","SA28","SA29","SA30"],
-      "A6": ["SA31","SA32","SA33","SA34","SA35","SA36","SA37"],
-      "B1": ["SB1","SB2","SB3","SB4","SB5","SB6"],
-      "B2": ["SB7","SB8","SB9","SB10","SB11","SB12"],
-      "B3": ["SB13","SB14","SB15","SB16","SB17","SB18"],
-      "B4": ["SB19","SB20","SB21","SB22","SB23","SB24"],
-      "B5": ["SB25","SB26","SB27","SB28","SB29","SB30"],
-      "B6": ["SB31","SB32","SB33","SB34","SB35","SB36","SB37"],
-      "C1": ["SC1","SC2","SC3","SC4","SC5","SC6"],
-      "C2": ["SC7","SC8","SC9","SC10","SC11","SC12"],
-      "C3": ["SC13","SC14","SC15","SC16","SC17","SC18"],
-      "C4": ["SC19","SC20","SC21","SC22","SC23","SC24"],
-      "C5": ["SC25","SC26","SC27","SC28","SC29","SC30"],
-      "D1": ["SD1","SD2","SD3","SD4","SD5","SD6"],
-      "D2": ["SD7","SD8","SD9","SD10","SD11","SD12"],
-      "D3": ["SD13","SD14","SD15","SD16","SD17","SD18"],
-      "D4": ["SD19","SD20","SD21","SD22","SD23","SD24"],
-      "D5": ["SD25","SD26","SD27","SD28","SD29","SD30"],
-      "E1": ["SE1","SE2","SE3","SE4","SE5","SE6"],
-      "E2": ["SE7","SE8","SE9","SE10","SE11","SE12"],
-      "E3": ["SE13","SE14","SE15","SE16","SE17","SE18"],
-      "E4": ["SE19","SE20","SE21","SE22","SE23","SE24"],
-      "E5": ["SE25","SE26","SE27","SE28","SE29","SE30"],
-      "F1": ["SF1","SF2","SF3","SF4","SF5","SF6"],
-      "F2": ["SF7","SF8","SF9","SF10","SF11","SF12"],
-      "F3": ["SF13","SF14","SF15","SF16","SF17","SF18"],
-      "F4": ["SF19","SF20","SF21","SF22","SF23","SF24"],
-      "F5": ["SF25","SF26","SF27","SF28","SF29","SF30"],
-      "G1": ["SG1","SG2","SG3","SG4","SG5","SG6"],
-      "G2": ["SG7","SG8","SG9","SG10","SG11","SG12"],
-      "G3": ["SG13","SG14","SG15","SG16","SG17","SG18"],
-      "G4": ["SG19","SG20","SG21","SG22","SG23","SG24"],
-      "G5": ["SG25","SG26","SG27","SG28","SG29","SG30"]
+      "A": ["A1","A2","A3","A4","A5","A6"],
+      "B": ["B1","B2","B3","B4","B5","B6"],
+      "C": ["C1","C2","C3","C4","C5"],
+      "D": ["D1","D2","D3","D4","D5"],
+      "E": ["E1","E2","E3","E4","E5"],
+      "F": ["F1","F2","F3","F4","F5"],
+      "G": ["G1","G2","G3","G4","G5"]
     };
 
     (function restoreLast(){
@@ -262,8 +226,8 @@
       const tm = document.getElementById('tm').value;
       const blockEl = document.getElementById('block');
       blockEl.innerHTML = '<option value="">-- Select Block --</option>';
-      if (tm && tmBlocks[tm]){
-        tmBlocks[tm].forEach(b=>{
+      if (tm){
+        allBlocks.forEach(b=>{
           const opt = document.createElement('option');
           opt.value = b; opt.textContent = b;
           blockEl.appendChild(opt);
